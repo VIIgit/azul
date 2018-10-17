@@ -118,8 +118,11 @@ def main():
         "replica": "aws"
     }
     # TODO: Need to write this so it scales nicely
+    # search_results = dss_client.post_search(**parameters)
+    # print(search_results)
     bundle_list = [uuid_and_version(r)
                    for r in dss_client.post_search.iterate(**parameters)]
+    print("Bundles to be processed: " + str(len(bundle_list)))
     errors = defaultdict(int)
     missing = {}
     indexed = 0
@@ -127,7 +130,7 @@ def main():
     for bundle_uuid, bundle_version in bundle_list:
         total += 1
         print("Bundle: {}, Version: {}".format(bundle_uuid, bundle_version))
-        retries = 3
+        retries = 0  # 3
         while True:
             try:
                 post_bundle(bundle_uuid, bundle_version)
@@ -148,6 +151,7 @@ def main():
                     break
             else:
                 break
+        # sleep(1)  # sleep(30)
     print("Total of bundles read: {}".format(total))
     print("Total of {} bundles indexed".format(indexed))
     print("Total number of errors by code:")
