@@ -184,14 +184,17 @@ class DataExtractor(object):
         bundle_version = request['match']['bundle_version']
         # Get the metadata and data descriptions
         metadata_files, data_files = self.__get_bundle(bundle_uuid, bundle_version, replica, will_include_urls=will_include_urls)
-        # Create a ThreadPool which will execute the function
-        pool = ThreadPool(len(metadata_files))
-        # Pool the contents in the right format for the get_metadata function
-        args = [(name, (_f['uuid'], _f['version'], replica)) for name, _f in
-                metadata_files.items()]
-        results = pool.starmap(get_metadata, args)
-        pool.close()
-        pool.join()
-        # Reassign the metadata files as a single dictionary
-        metadata_files = dict(ChainMap(*results))
+        if len(metadata_files):
+            # Create a ThreadPool which will execute the function
+            pool = ThreadPool(len(metadata_files))
+            # Pool the contents in the right format for the get_metadata function
+            args = [(name, (_f['uuid'], _f['version'], replica)) for name, _f in
+                    metadata_files.items()]
+            results = pool.starmap(get_metadata, args)
+            pool.close()
+            pool.join()
+            # Reassign the metadata files as a single dictionary
+            metadata_files = dict(ChainMap(*results))
+        else:
+            metadata_files = dict()
         return metadata_files, data_files
