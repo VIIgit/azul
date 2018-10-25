@@ -114,7 +114,7 @@ class DataExtractor(object):
                                 SwaggerAPIException,
                                 directurls=str(will_include_urls),
                                 uuid=bundle_uuid,
-                                version=bundle_version,
+                                # version=bundle_version,  # For Commons, for now, index the most recent bundle version
                                 replica=replica)
         # Separate files in bundle by metadata files and data files
         _files = bundle['bundle']['files']
