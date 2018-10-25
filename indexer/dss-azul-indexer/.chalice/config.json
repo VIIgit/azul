@@ -1,0 +1,32 @@
+{
+  "version": "2.0",
+  "app_name": "dss-azul-indexer",
+  "stages": {
+    "commonsdev": {
+      "api_gateway_stage": "commonsdev",
+      "manage_iam_role":false,
+      "iam_role_arn":"arn:aws:iam::719818754276:role/dss-azul-indexer-commonsdev",
+      "environment_variables": {
+         "ES_ENDPOINT":"search-dss-azul-commons-lx3ltgewjw5wiw2yrxftoqr7jy.us-west-2.es.amazonaws.com",
+         "BLUE_BOX_ENDPOINT":"commons-dss.ucsc-cgp-dev.org/v1",
+         "GOOGLE_APPLICATION_CREDENTIALS": "chalicelib/gcp-credentials.dev.json",
+         "ES_INDEX":"fb_index",
+         "INDEXER_NAME":"dss-azul-indexer",
+         "HOME":"/tmp"
+      }
+    },
+    "commonsstaging": {
+      "api_gateway_stage": "commonsstaging",
+      "manage_iam_role":false,
+      "iam_role_arn":"arn:aws:iam::097093801910:role/dss-azul-indexer-commonsstaging",
+      "environment_variables": {
+         "ES_ENDPOINT":"search-dss-azul-commonsstaging-ych2wypqhe6mqqajardlgexppy.us-west-2.es.amazonaws.com",
+         "BLUE_BOX_ENDPOINT":"commons-dss.ucsc-cgp.org/v1",
+         "GOOGLE_APPLICATION_CREDENTIALS": "chalicelib/gcp-credentials.staging.json",
+         "ES_INDEX":"fb_index",
+         "INDEXER_NAME":"dss-azul-indexer",
+         "HOME":"/tmp"
+      }
+    }
+  }
+}
