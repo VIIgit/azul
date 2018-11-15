@@ -1,7 +1,8 @@
 .idea
 .ipynb_checkpoints
 dss-indigo
-indexer/__pycache__
+**/__pycache__
 venv
-
+gcp-credentials.dev.json
+gcp-credentials.staging.json
 
