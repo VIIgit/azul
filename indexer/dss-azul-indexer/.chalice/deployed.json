@@ -1,0 +1,22 @@
+{
+  "commonsdev": {
+    "api_handler_name": "dss-azul-indexer-commonsdev",
+    "api_handler_arn": "arn:aws:lambda:us-west-2:719818754276:function:dss-azul-indexer-commonsdev",
+    "lambda_functions": {},
+    "backend": "api",
+    "chalice_version": "1.1.0",
+    "rest_api_id": "jk33rugb0a",
+    "api_gateway_stage": "commonsdev",
+    "region": "us-west-2"
+  },
+  "commonsstaging": {
+    "api_handler_name": "dss-azul-indexer-commonsstaging",
+    "api_handler_arn": "arn:aws:lambda:us-west-2:097093801910:function:dss-azul-indexer-commonsstaging",
+    "lambda_functions": {},
+    "backend": "api",
+    "chalice_version": "1.1.0",
+    "rest_api_id": "w8d4rb7sd5",
+    "api_gateway_stage": "commonsstaging",
+    "region": "us-west-2"
+  }
+}
