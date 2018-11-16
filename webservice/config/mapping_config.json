@@ -13,6 +13,7 @@
     {
       "donorId": "donor",
       "gender": "gender",
+      "consentCodes": "consentCodes",
       "biospecimenAnatomicSite": "biospecimenAnatomicSite",
       "otherIdentifiers": {
         "RedwoodDonorUUID": [

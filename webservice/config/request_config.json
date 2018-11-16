@@ -38,7 +38,8 @@
     "File URLs": "urls",
     "File Aliases": "aliases",
     "gender": "gender",
-    "biospecimenAnatomicSite": "biospecimen_anatomic_site"
+    "biospecimenAnatomicSite": "biospecimen_anatomic_site",
+    "consentCodes": "consent_codes"
   },
   "autocomplete-translation": {
     "ES_FILE_INDEX": {
@@ -57,6 +58,7 @@
       "donor": "donor",
       "gender": "gender",
       "biospecimenAnatomicSite": "biospecimenAnatomicSite",
+      "consentCodes": "consentCodes",
       "primarySite": "submitterDonorPrimarySite",
       "Program": "program",
       "Project": "project",
@@ -105,7 +107,8 @@
     "Data Bundle UUID",
     "Metadata.json",
     "File URLs",
-    "File Aliases"
+    "File Aliases",
+    "consentCodes"
   ],
   "facets": [
     "centerName",
@@ -116,6 +119,7 @@
     "fileFormat",
     "gender",
     "biospecimenAnatomicSite",
+    "consentCodes",
     "specimenType"
   ]
 }
