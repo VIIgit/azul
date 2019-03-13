@@ -737,7 +737,7 @@ def _dss_files(uuid, fetch=True):
     elif dss_response.status_code == 302:
         location = dss_response.headers['Location']
         # Remove once https://github.com/HumanCellAtlas/data-store/issues/1837 is resolved
-        if True:
+        if params.get('replica') == 'aws':
             location = urllib.parse.urlparse(location)
             query = urllib.parse.parse_qs(location.query, strict_parsing=True)
             expires = int(one(query['Expires']))
