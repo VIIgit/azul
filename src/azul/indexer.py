@@ -432,8 +432,8 @@ class IndexWriter:
         else:
             action = 'giving up'
         if update:
-            log.warning('Writing document %r requires update. Possible causes include duplicate notifications '
-                        'or reindexing without clearing the index.', doc.coordinates)
+            log.warning('Writing document %r requires update. Possible causes include duplicate subscriptions, '
+                        'notifications, or reindexing without clearing the index.', doc.coordinates)
         else:
             log.warning('There was a conflict with document %r: %r. Total # of errors: %i, %s.',
                         doc.coordinates, e, self.conflicts[doc.coordinates], action)
