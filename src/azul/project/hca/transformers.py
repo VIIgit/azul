@@ -1,9 +1,10 @@
 from abc import ABCMeta, abstractmethod
-from collections import Counter
+from collections import Counter, defaultdict
 import logging
 from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Set, Union
 
 from humancellatlas.data.metadata import api
+from more_itertools import one
 
 from azul import reject, require
 from azul.project.hca.metadata_generator import MetadataGenerator
@@ -312,8 +313,7 @@ class Transformer(AggregatingTransformer, metaclass=ABCMeta):
             'lane_index': int
         }
 
-
-    def _file(self, file: api.File) -> JSON:
+    def _file(self, file: api.File, related_files: Iterable[api.File] = ()) -> JSON:
         # noinspection PyDeprecation
         return {
             'content-type': file.manifest_entry.content_type,
@@ -326,13 +326,23 @@ class Transformer(AggregatingTransformer, metaclass=ABCMeta):
             'document_id': str(file.document_id),
             'file_format': file.file_format,
             '_type': 'file',
+            'related_files': [self._related_file(f) for f in related_files],
             **(
                 {
                     'read_index': file.read_index,
                     'lane_index': file.lane_index
                 } if isinstance(file, api.SequenceFile) else {
                 }
-            )
+            ),
+        }
+
+    def _related_file(self, file: api.File) -> JSON:
+        return {
+            'name': file.manifest_entry.name,
+            'sha256': file.manifest_entry.sha256,
+            'size': file.manifest_entry.size,
+            'uuid': file.manifest_entry.uuid,
+            'version': file.manifest_entry.version,
         }
 
     @classmethod
@@ -420,6 +430,18 @@ class Transformer(AggregatingTransformer, metaclass=ABCMeta):
         }
 
 
+def _parse_zarr_file_name(file_name):
+    delimiter = [delim for delim in ('.zarr!', '.zarr/') if delim in file_name]
+    try:
+        delimiter = one(delimiter)
+        zarr_name, sub_name = file_name.split(delimiter)
+    except ValueError:
+        # Both one() and unpacking will raise ValueError for an unexpected
+        # number of items. In either case we have an invalid zarr
+        zarr_name, sub_name = None, None
+    return zarr_name, sub_name
+
+
 class TransformerVisitor(api.EntityVisitor):
     # Entities are tracked by ID to ensure uniqueness if an entity is visited twice while descending the entity DAG
     specimens: MutableMapping[api.UUID4, api.SpecimenFromOrganism]
@@ -459,7 +481,9 @@ class TransformerVisitor(api.EntityVisitor):
                     self.protocols[protocol.document_id] = protocol
         elif isinstance(entity, api.File):
             # noinspection PyDeprecation
-            if '.zarr!' in entity.manifest_entry.name and not entity.manifest_entry.name.endswith('.zattrs'):
+            file_name = entity.manifest_entry.name
+            zarr_name, sub_name = _parse_zarr_file_name(file_name)
+            if zarr_name and sub_name and not file_name.endswith('.zattrs'):
                 # FIXME: Remove once https://github.com/HumanCellAtlas/metadata-schema/issues/579 is resolved
                 #
                 return
@@ -483,12 +507,21 @@ class FileTransformer(Transformer):
                             manifest=manifest,
                             metadata_files=metadata_files)
         project = self._get_project(bundle)
+        zarr_stores: Mapping[str, List[api.File]] = self.group_zarrs(bundle.files.values())
         for file in bundle.files.values():
-            # noinspection PyDeprecation
-            if '.zarr!' in file.manifest_entry.name and not file.manifest_entry.name.endswith('.zattrs'):
-                # FIXME: Remove once https://github.com/HumanCellAtlas/metadata-schema/issues/579 is resolved
-                #
-                continue
+            file_name = file.manifest_entry.name
+            zarr_name, sub_name = _parse_zarr_file_name(file_name)
+            if zarr_name and sub_name:
+                # noinspection PyDeprecation
+                if not sub_name.endswith('.zattrs'):
+                    # FIXME: Remove once https://github.com/HumanCellAtlas/metadata-schema/issues/579 is resolved
+                    #
+                    continue
+                else:
+                    # This is the representative file, so add the related files
+                    related_files = zarr_stores[zarr_name]
+            else:
+                related_files = ()
             visitor = TransformerVisitor()
             file.accept(visitor)
             file.ancestors(visitor)
@@ -501,10 +534,21 @@ class FileTransformer(Transformer):
                             cell_lines=[self._cell_line(cl) for cl in visitor.cell_lines.values()],
                             donors=[self._donor(d) for d in visitor.donors.values()],
                             organoids=[self._organoid(o) for o in visitor.organoids.values()],
-                            files=[self._file(file)],
+                            files=[self._file(file, related_files=related_files)],
                             protocols=[self._protocol(pl) for pl in visitor.protocols.values()],
                             projects=[self._project(project)])
             yield self._contribution(bundle, contents, file.document_id, deleted)
+
+    def group_zarrs(self, files: Iterable[api.File]) -> Mapping[str, List[api.File]]:
+        zarr_stores = defaultdict(list)
+        for file in files:
+            file_name = file.manifest_entry.name
+            zarr_name, sub_name = _parse_zarr_file_name(file_name)
+            if zarr_name and sub_name:
+                # Leave the representative file out of the list since it's already in the manifest
+                if not sub_name.startswith('.zattrs'):
+                    zarr_stores[zarr_name].append(file)
+        return zarr_stores
 
 
 class CellSuspensionTransformer(Transformer):

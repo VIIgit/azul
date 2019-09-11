@@ -83,6 +83,7 @@
                 "organoids": [],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -99,6 +100,7 @@
                         "lane_index_": null
                     },
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
@@ -463,6 +465,7 @@
                 ],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
@@ -638,6 +641,7 @@
                 ],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -813,6 +817,7 @@
                 ],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -829,6 +834,7 @@
                         "lane_index_": null
                     },
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
@@ -1004,6 +1010,7 @@
                 ],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -1020,6 +1027,7 @@
                         "lane_index_": null
                     },
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
@@ -1239,6 +1247,7 @@
                 "organoids": [],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -1255,6 +1264,7 @@
                         "lane_index_": null
                     },
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
@@ -1641,6 +1651,7 @@
                 ],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
@@ -1839,6 +1850,7 @@
                 ],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -2375,6 +2387,7 @@
                 "organoids": [],
                 "files": [
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_2.fastq.gz",
@@ -2391,6 +2404,7 @@
                         "lane_index_": null
                     },
                     {
+                        "related_files": [],
                         "content-type": "application/gzip; dcp-type=data",
                         "indexed": 0,
                         "name": "SRR3562915_1.fastq.gz",
