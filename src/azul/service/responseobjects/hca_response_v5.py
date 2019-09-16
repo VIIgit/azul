@@ -11,7 +11,7 @@ import logging
 import os
 from tempfile import TemporaryDirectory, mkstemp
 import re
-from typing import Any, List, Mapping, MutableMapping, IO, Optional, Callable, TypeVar
+from typing import Any, List, Mapping, MutableMapping, IO, Optional, Callable, TypeVar, Iterable
 import unicodedata
 from uuid import uuid4
 
@@ -372,6 +372,20 @@ class ManifestResponse(AbstractResponse):
                     entities = self._get_entities(doc_path, doc)
                     self._extract_fields(entities, column_mapping, row)
                 writer.writerow(row)
+                related_rows = list(self._get_related_rows(doc, row))
+                for r in related_rows:
+                    for k, v in r.items():
+                        if '\n' in k or '\n' in str(v):
+                            foo = 1
+
+                writer.writerows(related_rows)
+
+    def _get_related_rows(self, doc: dict, row: dict) -> Iterable[dict]:
+        file_ = one(doc['contents']['files'])
+        for related in file_['related_files']:
+            new_row = row.copy()
+            new_row.update({'file_' + k: v for k, v in related.items()})
+            yield new_row
 
     def _write_full(self, output: IO[str]) -> Optional[str]:
         sources = list(self.manifest_entries['contents'].keys())
