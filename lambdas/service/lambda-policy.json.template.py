@@ -146,6 +146,15 @@ emit({
                 f"arn:aws:apigateway:{aws.region_name}::"
                 f"/restapis/{aws.api_gateway_id(config.service_name)}/stages/{config.deployment_stage}/exports/oas30"
             ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Query"
+            ],
+            "Resource": [
+                f"arn:aws:dynamodb:{aws.region_name}:{aws.account}:table/{config.dynamo_failure_message_table_name}",
+            ]
         }
     ]
 })

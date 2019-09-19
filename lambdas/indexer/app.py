@@ -25,6 +25,7 @@ from azul.chalice import AzulChaliceApp
 from azul.health import Health
 from azul.logging import configure_app_logging
 from azul.plugin import Plugin
+from azul.queues import Queues
 from azul.time import RemainingLambdaContextTime
 from azul.transformer import EntityReference
 from azul.types import JSON
@@ -458,3 +459,23 @@ def nudge(event: chalice.app.CloudWatchEvent):
         log.info('Nudging queue with %i token(s) for a total value of %i', len(tokens), num_documents)
         for batch in chunked(tokens, 10):
             _send_tokens(batch)
+
+
+@app.schedule('rate(5 minutes)')
+def retrieve_fail_messages(event: chalice.app.CloudWatchEvent):
+    """
+    Get all the messages from the fail queue and save them in the the DynamoDB failure message table.
+    """
+    assert event is not None  # avoid linter warning
+    messages = Queues().receive_all_messages(config.fail_queue_name)
+    database = boto3.resource('dynamodb')
+    table = database.Table(config.dynamo_failure_message_table_name)
+    with table.batch_writer() as writer:
+        for message in messages:
+            body = json.loads(message.body)
+            item = {
+                'MessageType': 'bundle_notification' if 'notification' in body.keys() else 'other',
+                'SentTimeMessageId': f"{message.attributes['SentTimestamp']}-{message.message_id}",
+                'Body': message.body
+            }
+            writer.put_item(Item=item)

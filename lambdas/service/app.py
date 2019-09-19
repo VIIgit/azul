@@ -13,8 +13,8 @@ from urllib.parse import urlparse
 
 import boto3
 from botocore.exceptions import ClientError
-# noinspection PyPackageRequirements
-from chalice import AuthResponse, BadRequestError, ChaliceViewError, NotFoundError, Response
+# noingpespection PyPackageRequirements
+from chalice import AuthResponse, BadRequestError, ChaliceViewError, NotFoundError, Response, app
 from more_itertools import one
 import requests
 
@@ -163,6 +163,8 @@ def health(keys: Optional[str] = None):
         return {
             'up': True,
         }
+    elif keys == 'failures':
+        return Health('service').failures
     else:
         health = Health('service')
         if keys is None:
