@@ -1,6 +1,5 @@
 from time import time
 from typing import Dict, Any
-from unittest import TestCase
 from unittest.mock import patch
 from urllib.parse import urlparse, parse_qs
 
@@ -13,10 +12,11 @@ from azul.security.authenticator import (Authenticator,
                                          InvalidTokenError,
                                          NonDecodableTokenError,
                                          InvalidRedirectUriError)
+from azul_test_case import AlwaysTearDownTestCase
 from retorts import AuthResponseHelper, TestKeyManager
 
 
-class AuthenticatorTestCase(TestCase):
+class AuthenticatorTestCase(AlwaysTearDownTestCase):
     @classmethod
     def tearDownClass(cls):
         super().setUpClass()
