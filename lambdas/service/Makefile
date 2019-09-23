@@ -18,6 +18,7 @@ deploy: state wheels
 	python $(azul_home)/scripts/manage_chalice_deployed.py service upload
 
 delete: state
+    python $(azul_home)/scripts/delete_lambda_iam_role.py service
 	chalice delete --stage $(AZUL_DEPLOYMENT_STAGE)
 	python $(azul_home)/scripts/manage_chalice_deployed.py service upload
 
