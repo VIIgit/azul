@@ -21,20 +21,17 @@ try:
 except iam.exceptions.NoSuchEntityException:
     policies = None
 
-# print('Role: ', role, '\n')
-# print('Policies:', policies, '\n')
-
 if policies is not None:
     for policy_name in policies['PolicyNames']:
         try:
-            print(f"Deleting Policy {policy_name}")
-            # iam.delete_role_policy(RoleName=role_name, PolicyName=policy_name)
+            print(f"Deleting IAM Policy {policy_name}")
+            iam.delete_role_policy(RoleName=role_name, PolicyName=policy_name)
         except:
             print(f"Error deleting Policy {policy_name}")
 
 if role is not None:
     try:
-        print(f"Deleting Role {role_name}")
-        # iam.delete_role(RoleName=role_name)
+        print(f"Deleting IAM Role {role_name}")
+        iam.delete_role(RoleName=role_name)
     except:
         print(f"Error deleting Role {role_name}")
