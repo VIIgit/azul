@@ -464,12 +464,10 @@ make delete
    To hit the indexer (not the service) with multiple notification requests, run
 
    ```
-   python scripts/reindex.py --workers=1 --sync --indexer-url http://127.0.0.1:8000/
+   python scripts/reindex.py --workers=1 --indexer-url http://127.0.0.1:8000/
    ```
 
-   in a separate shell. The `--sync` argument causes the Chalice app to invoke
-   the indexing code directly instead of queuing an SQS message to be consumed
-   by the indexer worker Lambda function in AWS.
+   in a separate shell.
 
    Consider passing `--es-query` to restrict the set of bundles for which
    notifications are sent, especially if you are using a debugger.
