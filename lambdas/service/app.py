@@ -194,10 +194,28 @@ def validate_repository_search(params, **validators):
         'search_after_uid': str,
         'search_before': str,
         'search_before_uid': str,
-        'size': int,
+        'size': validate_size,
         'sort': validate_facet,
         **validators
     })
+
+
+def validate_size(size):
+    """
+    >>> validate_size('999')
+
+    >>> validate_size('100000')
+    Traceback (most recent call last):
+    ...
+    chalice.app.BadRequestError: BadRequestError: Invalid size value, must be less than 1000
+    """
+    try:
+        size = int(size)
+    except:
+        raise BadRequestError(f'Invalid type parameter for `size`')
+    else:
+        if size > 1000:
+            raise BadRequestError(f'Invalid size value, must be less than 1000')
 
 
 def validate_filters(filters):
