@@ -1393,23 +1393,50 @@ class TestPortalIntegrationResponse(LocalAppTestCase):
 
     maxDiff = None
 
+    def _get_integrations(self, params=None):
+        url = self.base_url + '/integrations'
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        return response.json()
+
+    # TODO: Change test to be more generic, not specific to current contents of portal integrations db
     def test_integrations(self):
         test_cases = [
             ('get_manifest', 'file', 1),
             ('get', 'project', 9),
         ]
         for integration_type, entity_type, num_integrations_expected in test_cases:
-            with self.subTest(integration_type=integration_type,
-                              entity_type=entity_type):
-                url = self.base_url + f'/integrations?integration_type={integration_type}&entity_type={entity_type}'
-                response = requests.get(url)
-                response.raise_for_status()
-                response_json = response.json()
+            with self.subTest(integration_type=integration_type, entity_type=entity_type):
+                params = dict(integration_type=integration_type, entity_type=entity_type)
+                response_json = self._get_integrations(params=params)
                 num_integrations = sum(len(portal['integrations']) for portal in response_json)
                 self.assertEqual(num_integrations, num_integrations_expected)
                 self.assertTrue(all(isinstance(integration.get('entity_ids', []), list)
                                 for portal in response_json
                                 for integration in portal['integrations']))
+
+    def test_integrations_entity_ids(self):
+        def extract_entity_ids(response_json):
+            return [entity_id
+                    for portal in response_json
+                    for integration in portal['integrations']
+                    for entity_id in integration['entity_ids']]
+        # To avoid hardcoding a specific UUID in this test we first make a request without entity_ids specified
+        params = dict(integration_type='get', entity_type='project')
+        response_json = self._get_integrations(params=params)
+        entity_ids = extract_entity_ids(response_json)
+        # If we have an entity_id we can make a request specifying that entity_id to verify only it is returned
+        if len(entity_ids) > 0:
+            params = dict(integration_type='get', entity_type='project', entity_ids=entity_ids[0])
+            response_json = self._get_integrations(params=params)
+            found_entity_ids = extract_entity_ids(response_json)
+            self.assertEqual(set([entity_ids[0]]), set(found_entity_ids))
+        # If we have more than one entity_id to work with we can verify entity_ids works with a list of ids
+        if len(entity_ids) > 1:
+            params = dict(integration_type='get', entity_type='project', entity_ids=','.join(entity_ids[0:2]))
+            response_json = self._get_integrations(params=params)
+            found_entity_ids = extract_entity_ids(response_json)
+            self.assertEqual(set(entity_ids[0:2]), set(found_entity_ids))
 
 
 if __name__ == '__main__':

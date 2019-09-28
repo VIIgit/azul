@@ -319,28 +319,40 @@ def validate_params(query_params: Mapping[str, str],
 @app.route('/integrations', methods=['GET'], cors=True)
 def get_integrations():
     query_params = app.current_request.query_params or {}
-    validate_params(query_params, entity_type=str, integration_type=str)
+    validate_params(query_params, entity_type=str, integration_type=str, entity_ids=str)
+    entity_ids = query_params.get('entity_ids', '')
+    entity_ids = None if entity_ids == '' else entity_ids.split(',')
     try:
         entity_type = query_params['entity_type']
         integration_type = query_params['integration_type']
     except KeyError:
         raise BadRequestError('Parameters entity_type and integration_type must be given')
-    body = _fetch_integrations(entity_type, integration_type)
+    body = _fetch_integrations(entity_type, integration_type, entity_ids)
     return Response(status_code=200,
                     headers={"content-type": "application/json"},
                     body=json.dumps(body))
 
 
-def _fetch_integrations(entity_type, integration_type):
+def _fetch_integrations(entity_type, integration_type, entity_ids):
+    """
+    Return the matching portal integrations
+    :param entity_type: The type of the entity to which an integration applies (e.g. project, file, bundle)
+    :param integration_type: The kind of integration (e.g. get, get_entity, get_entities, get_manifest)
+    :param entity_ids: If given results will be limited to this list of entity UUIDs
+    :return: A list of portal dicts that one or more matching integrations
+    """
     plugin = Plugin.load()
     portals = plugin.portal_integrations_db()
     results = []
+    entity_ids = set(entity_ids) if isinstance(entity_ids, list) and len(entity_ids) > 0 else None
     for portal in portals:
         integrations = [
             {k: v if k != 'entity_ids' else v[config.dss_deployment_stage] for k, v in integration.items()}
             for integration in cast(Sequence[JSON], portal['integrations'])
             if integration['entity_type'] == entity_type and integration['integration_type'] == integration_type
         ]
+        if entity_ids is not None:
+            integrations = [i for i in integrations if 'entity_ids' not in i or len(entity_ids & set(i['entity_ids']))]
         if len(integrations) > 0:
             portal = {k: v if k != 'integrations' else integrations for k, v in portal.items()}
             results.append(portal)
